@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum CourseLevel {
+  BEGINNER
+  REGULAR
+  ADVANCED
+}
+
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum ResourceAccess {
+  FREE
+  REGISTERED
+  PAID
+}
+
+model User {
+  id           String           @id @default(cuid())
+  fullName     String
+  email        String           @unique
+  phone        String?
+  passwordHash String
+  role         UserRole         @default(USER)
+  avatarUrl    String?
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  registrations Registration[]
+  notifications Notification[]
+}
+
+model Course {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  category    String?
+  duration    String?
+  isPublished Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  levels      CourseOffering[]
+  registrations Registration[]
+}
+
+model CourseOffering {
+  id          String      @id @default(cuid())
+  courseId    String
+  level       CourseLevel
+  isAvailable Boolean     @default(true)
+  fee         Decimal     @default(0) @db.Decimal(12, 2)
+  course      Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  registrations Registration[]
+  @@unique([courseId, level])
+}
+
+model Registration {
+  id               String             @id @default(cuid())
+  userId           String
+  courseId         String
+  offeringId       String
+  status           RegistrationStatus @default(PENDING)
+  university       String?
+  universityYear   Int?
+  universityRegNo  String?
+  guardianContact  String?
+  registeredAt     DateTime           @default(now())
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course           Course              @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  offering         CourseOffering      @relation(fields: [offeringId], references: [id], onDelete: Restrict)
+}
+
+model LibraryResource {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  category    String?
+  subject     String?
+  level       CourseLevel?
+  fileUrl     String
+  thumbnailUrl String?
+  access      ResourceAccess @default(FREE)
+  price       Decimal       @default(0) @db.Decimal(12, 2)
+  canDownload Boolean      @default(false)
+  isPublished Boolean      @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  targetUrl String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, isRead])
+}
