@@ -1,7 +1,12 @@
+
 import { Module } from '@nestjs/common';
+import { CommonModule } from '../common/common.module';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsService } from './notifications.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 
-@Module({ controllers: [NotificationsController], providers: [NotificationsService, JwtAuthGuard] })
+@Module({
+  imports: [CommonModule],
+  controllers: [NotificationsController],
+  providers: [NotificationsService],
+})
 export class NotificationsModule {}

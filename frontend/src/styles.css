@@ -3,3 +3,15 @@
 @media(max-width:900px){.topbar{gap:25px}.desktop-nav{gap:18px}.hero{gap:15px}.hero-art{transform:scale(.9)}.course-grid{grid-template-columns:repeat(2,1fr)}.library-layout{gap:40px}.trust-strip{gap:30px}.top-register{display:none}}
 @media(max-width:650px){.section-wrap{width:calc(100% - 38px)}.topbar{height:66px;padding:0 18px;gap:12px}.mobile-menu{display:grid}.brand{font-size:15px;gap:8px}.brand-mark{width:33px;height:33px}.desktop-nav,.top-login{display:none}.top-actions{margin-left:auto;gap:9px}.hero{grid-template-columns:1fr;padding-block:58px 30px;gap:0}.hero h1{font-size:45px}.hero-lead{font-size:13px}.hero-art{height:340px;transform:scale(.86);margin:-5px -25px -10px}.trust-strip{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:22px 20px}.trust-strip>div:last-child{grid-column:1/-1}.courses-section{padding-block:65px}.section-heading{align-items:start;gap:10px}.section-heading h2{font-size:29px}.section-heading p{font-size:11px;max-width:280px}.text-link{font-size:9px;white-space:nowrap;margin-top:23px}.course-grid{gap:10px}.course-card{min-height:190px;padding:15px}.course-card h3{font-size:16px}.course-card p{font-size:9px}.library-band{padding-block:58px}.library-layout{grid-template-columns:1fr;gap:27px}.library-intro h2{font-size:36px}.library-intro>p{font-size:12px}.resource-card{padding:11px;gap:9px}.resource-info b{font-size:10px}.access-pill{font-size:8px;padding:5px 6px}.about-section{padding-block:55px;display:grid;grid-template-columns:55px 1fr;gap:15px}.about-mark{width:55px;height:55px}.about-section h2{font-size:24px}.about-section p{font-size:11px}.about-section>.btn{grid-column:2;justify-self:start}.footer-inner{flex-wrap:wrap;justify-content:center;text-align:center;gap:13px}.footer-inner>span{order:3;width:100%}.auth-modal{padding:29px 23px 23px}.auth-modal h2{font-size:24px}}
 @media(max-width:390px){.hero h1{font-size:40px}.hero-actions{gap:8px}.hero-actions .btn{padding:0 12px;font-size:10px}.course-grid{grid-template-columns:1fr 1fr}.course-card{min-height:180px}.resource-info b{font-size:9px}.access-pill{display:none}}
+
+.menu-trigger {
+  display: grid;
+  flex-shrink: 0;
+  color: var(--navy);
+  width: 40px;
+  height: 40px;
+}
+
+.topbar {
+  gap: 22px;
+}
