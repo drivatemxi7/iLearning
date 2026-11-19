@@ -1,10 +1,20 @@
 
 import React, { useState } from 'react';
-import { X, ArrowRight, Eye, EyeOff, GraduationCap } from 'lucide-react';
+import {
+  X,
+  Eye,
+  EyeOff,
+  GraduationCap
+} from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
-export default function AuthModal({ mode, setMode, onClose }) {
+export default function AuthModal({
+  mode,
+  setMode,
+  onClose,
+  onSuccess
+}) {
   const [show, setShow] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,7 +28,10 @@ export default function AuthModal({ mode, setMode, onClose }) {
   });
 
   const update = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
     setError('');
   };
 
@@ -28,7 +41,10 @@ export default function AuthModal({ mode, setMode, onClose }) {
     setLoading(true);
 
     try {
-const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
+      const endpoint =
+        mode === 'signup'
+          ? '/auth/register'
+          : '/auth/login';
 
       const payload =
         mode === 'signup'
@@ -55,21 +71,38 @@ const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
 
       if (!response.ok) {
         throw new Error(
-          data.message || 'Authentication failed. Please try again.'
+          Array.isArray(data.message)
+            ? data.message.join(', ')
+            : data.message || 'Authentication failed. Please try again.'
         );
       }
 
-      if (!data.accessToken) {
-        throw new Error('The server did not return an authentication token.');
+      if (!data.accessToken || !data.user) {
+        throw new Error(
+          'The server did not return the expected authentication details.'
+        );
       }
 
-      sessionStorage.setItem('lmdrp_access_token', data.accessToken);
-      sessionStorage.setItem('lmdrp_user', JSON.stringify(data.user));
+      // Save authentication information
+      sessionStorage.setItem(
+        'lmdrp_access_token',
+        data.accessToken
+      );
+
+      sessionStorage.setItem(
+        'lmdrp_user',
+        JSON.stringify(data.user)
+      );
+
+      // Notify App.jsx immediately
+      onSuccess?.(data.user);
 
       setDone(true);
+
     } catch (err) {
       setError(
-        err.message || 'Unable to connect to the server. Please try again.'
+        err.message ||
+        'Unable to connect to the server. Please try again.'
       );
     } finally {
       setLoading(false);
@@ -85,10 +118,17 @@ const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
   return (
     <div
       className="modal-backdrop"
-      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+      onMouseDown={(e) =>
+        e.target === e.currentTarget && onClose()
+      }
     >
       <section className="auth-modal">
-        <button className="icon-btn modal-close" onClick={onClose}>
+
+        <button
+          className="icon-btn modal-close"
+          onClick={onClose}
+          aria-label="Close authentication"
+        >
           <X />
         </button>
 
@@ -101,23 +141,40 @@ const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
 
         {done ? (
           <div className="success-state">
+
             <div className="success-icon">✓</div>
-            <h2>{mode === 'signup' ? 'Account created!' : 'Welcome back!'}</h2>
+
+            <h2>
+              {mode === 'signup'
+                ? 'Account created!'
+                : 'Welcome back!'}
+            </h2>
+
             <p>
               {mode === 'signup'
                 ? 'Your account has been successfully created.'
                 : 'You have successfully logged in.'}
             </p>
-            <button className="btn btn-primary full" onClick={onClose}>
+
+            <button
+              className="btn btn-primary full"
+              onClick={onClose}
+            >
               Continue
             </button>
+
           </div>
         ) : (
           <>
-            <span className="eyebrow">YOUR NEXT CHAPTER STARTS HERE</span>
+
+            <span className="eyebrow">
+              YOUR NEXT CHAPTER STARTS HERE
+            </span>
 
             <h2>
-              {mode === 'signup' ? 'Create your account' : 'Welcome back'}
+              {mode === 'signup'
+                ? 'Create your account'
+                : 'Welcome back'}
             </h2>
 
             <p className="auth-sub">
@@ -127,24 +184,31 @@ const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
             </p>
 
             <div className="auth-tabs">
+
               <button
                 className={mode === 'signup' ? 'active' : ''}
                 onClick={() => switchMode('signup')}
+                type="button"
               >
                 Sign up
               </button>
+
               <button
                 className={mode === 'login' ? 'active' : ''}
                 onClick={() => switchMode('login')}
+                type="button"
               >
                 Log in
               </button>
+
             </div>
 
             <form onSubmit={submit}>
+
               {mode === 'signup' && (
                 <label>
                   Full name
+
                   <input
                     name="name"
                     value={form.name}
@@ -158,6 +222,7 @@ const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
               {mode === 'signup' && (
                 <label>
                   Phone number (optional)
+
                   <input
                     name="phone"
                     value={form.phone}
@@ -169,6 +234,7 @@ const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
 
               <label>
                 Email address
+
                 <input
                   name="email"
                   type="email"
@@ -181,7 +247,9 @@ const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
 
               <label>
                 Password
+
                 <div className="password-wrap">
+
                   <input
                     name="password"
                     type={show ? 'text' : 'password'}
@@ -191,13 +259,17 @@ const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
                     minLength={mode === 'signup' ? 10 : 1}
                     required
                   />
+
                   <button
                     type="button"
                     onClick={() => setShow(!show)}
                     aria-label="Toggle password visibility"
                   >
-                    {show ? <EyeOff size={17} /> : <Eye size={17} />}
+                    {show
+                      ? <EyeOff size={17} />
+                      : <Eye size={17} />}
                   </button>
+
                 </div>
               </label>
 
@@ -223,16 +295,19 @@ const endpoint = mode === 'signup' ? '/auth/register' : '/auth/login';
                   : mode === 'signup'
                     ? 'Create account'
                     : 'Log in'}
-                {!loading && <ArrowRight size={17} />}
               </button>
+
             </form>
 
             <p className="terms">
-              By continuing, you agree to our <a href="#">Terms</a> and{' '}
+              By continuing, you agree to our{' '}
+              <a href="#">Terms</a> and{' '}
               <a href="#">Privacy Policy</a>.
             </p>
+
           </>
         )}
+
       </section>
     </div>
   );

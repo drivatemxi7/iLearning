@@ -3,10 +3,19 @@ import React from 'react';
 import {
   Bell,
   Menu,
-  GraduationCap
+  GraduationCap,
 } from 'lucide-react';
 
-export default function Header({ onMenu, onAuth }) {
+export default function Header({
+  onMenu,
+  onAuth,
+  onProfile,
+  user,
+  onLogout,
+}) {
+  const initial =
+    user?.fullName?.charAt(0)?.toUpperCase() || 'U';
+
   return (
     <header className="topbar">
       <button
@@ -21,9 +30,10 @@ export default function Header({ onMenu, onAuth }) {
         <span className="brand-mark">
           <GraduationCap size={21} />
         </span>
+
         <span>
-          LMDRP
-          <small>LEARN • CREATE • GROW</small>
+          iLEARNING
+          <small>LEARN  CREATE  GROW</small>
         </span>
       </a>
 
@@ -34,35 +44,53 @@ export default function Header({ onMenu, onAuth }) {
       </nav>
 
       <div className="top-actions">
-        <button
-          className="icon-btn notification"
-          aria-label="Notifications"
-        >
-          <Bell size={19} />
-          <i />
-        </button>
+        {user ? (
+          <>
+            <button
+              className="icon-btn notification"
+              aria-label="Notifications"
+            >
+              <Bell size={19} />
+              <i />
+            </button>
 
-        <button
-          className="avatar"
-          aria-label="Account menu"
-          onClick={onMenu}
-        >
-          J
-        </button>
+            <button
+              className="avatar"
+              aria-label="Open profile"
+              onClick={onProfile}
+              title="My profile"
+            >
+              {initial}
+            </button>
 
-        <button
-          className="btn btn-outline top-login"
-          onClick={() => onAuth('login')}
-        >
-          Log in
-        </button>
+            <span className="top-login">
+              {user.fullName}
+            </span>
 
-        <button
-          className="btn btn-primary top-register"
-          onClick={() => onAuth('signup')}
-        >
-          Get started
-        </button>
+            <button
+              className="btn btn-outline top-register"
+              onClick={onLogout}
+            >
+              Log out
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className="btn btn-outline top-login"
+              onClick={() => onAuth('login')}
+            >
+              Log in
+            </button>
+
+            <button
+              className="btn btn-primary top-register"
+              onClick={() => onAuth('signup')}
+            >
+              Get started
+            </button>
+          </>
+        )}
       </div>
     </header>
   );

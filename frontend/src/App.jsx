@@ -1,17 +1,304 @@
-import React,{useState} from 'react';
-import { ArrowRight, ArrowUpRight, BookOpen, CheckCircle2, FileText, PlayCircle, Search, Sparkles, Menu as MenuIcon, GraduationCap, Users, Target, X } from 'lucide-react';
+
+import React, { useState } from 'react';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+} from 'react-router-dom';
+
+import {
+  BookOpen,
+  CheckCircle2,
+  PlayCircle,
+  GraduationCap,
+  Users,
+  Target,
+} from 'lucide-react';
+
 import Header from './components/Header.jsx';
 import SideMenu from './components/SideMenu.jsx';
 import AuthModal from './components/AuthModal.jsx';
-import {courses,resources} from './data/content.js';
-export default function App(){const [menuOpen,setMenuOpen]=useState(false);const [auth,setAuth]=useState(null);const [query,setQuery]=useState('');const [notice,setNotice]=useState('');
- const openAuth=mode=>setAuth(mode);
- return <div className="app-shell"><Header onMenu={()=>setMenuOpen(true)} onAuth={openAuth}/><SideMenu open={menuOpen} onClose={()=>setMenuOpen(false)} onAuth={openAuth}/>
- <main id="home"><section className="hero section-wrap"><div className="hero-copy"><span className="eyebrow"><span className="eyebrow-dot"/> PRACTICAL SKILLS. REAL OPPORTUNITIES.</span><h1>Learn skills that<br/><em>move you forward.</em></h1><p className="hero-lead">Build practical, industry-relevant skills with guided courses, helpful resources and a community that wants to see you grow.</p><div className="hero-actions"><button className="btn btn-primary" onClick={()=>openAuth('signup')}>Register now <ArrowRight size={17}/></button><a className="btn btn-light" href="#courses">Explore courses <ArrowUpRight size={16}/></a></div><div className="hero-proof"><div className="proof-avatars"><span>M</span><span>T</span><span>A</span><b>+</b></div><span><strong>Learn at your pace</strong><small>Start building skills today</small></span></div></div><div className="hero-art"><div className="art-orbit orbit-one"/><div className="art-orbit orbit-two"/><div className="art-card art-card-main"><div className="art-top"><span className="live-dot"/> LEARNING PATH</div><div className="art-symbol">◈</div><h3>Turn curiosity<br/>into capability.</h3><p>Small steps. Practical projects. New possibilities.</p><div className="art-progress"><span/><span/><span/><span/></div><small>YOUR JOURNEY STARTS HERE</small></div><div className="floating-card float-top"><span className="float-icon green-icon"><CheckCircle2 size={19}/></span><span><b>Keep growing</b><small>One skill at a time</small></span></div><div className="floating-card float-bottom"><span className="float-icon red-icon"><PlayCircle size={20}/></span><span><b>Learn by doing</b><small>Practical lessons</small></span></div><div className="art-stamp"><GraduationCap size={24}/></div></div></section>
- <section className="trust-strip"><div><span className="strip-icon"><Target/></span><span><b>Practical learning</b><small>Skills you can apply</small></span></div><div><span className="strip-icon"><BookOpen/></span><span><b>Useful resources</b><small>Learn beyond the lesson</small></span></div><div><span className="strip-icon"><Users/></span><span><b>Guided community</b><small>Grow with support</small></span></div></section>
- <section className="section-wrap courses-section" id="courses"><div className="section-heading"><div><span className="eyebrow">FIND YOUR STARTING POINT</span><h2>Explore courses</h2><p>Discover a skill, develop your knowledge and put it into practice.</p></div><a className="text-link" href="#courses">View all courses <ArrowRight size={16}/></a></div><div className="course-grid">{courses.slice(0,4).map((course,i)=><article className={`course-card ${course.tone}`} key={course.title}><div className="course-card-top"><span className="course-category">{course.category}</span><span className="course-glyph">{course.icon}</span></div><div><h3>{course.title}</h3><p>{course.description}</p></div><button onClick={()=>openAuth('signup')} className="course-link">Explore course <ArrowUpRight size={16}/></button></article>)}</div></section>
- <section className="library-band" id="library"><div className="section-wrap library-layout"><div className="library-intro"><span className="eyebrow">THE LEARNING LIBRARY</span><h2>Knowledge worth<br/>keeping close.</h2><p>Browse helpful documents and learning materials selected to support your skills journey.</p><div className="library-search"><Search size={18}/><input aria-label="Search resources" placeholder="Search the library..." value={query} onChange={e=>setQuery(e.target.value)}/></div><span className="library-note"><Sparkles size={14}/> New resources added regularly</span></div><div className="resource-list">{resources.filter(r=>(r.title+' '+r.category).toLowerCase().includes(query.toLowerCase())).map((r,i)=><article className="resource-card" key={r.title}><span className="file-icon"><FileText size={21}/></span><div className="resource-info"><b>{r.title}</b><small>{r.category} · {r.type}</small></div><span className={`access-pill ${r.access==='Free'?'free':''}`}>{r.access}</span><button className="resource-open" onClick={()=>r.access==='Free'?setNotice('This sample resource will be connected when the library backend is added.'):openAuth('signup')} aria-label={`Open ${r.title}`}><ArrowUpRight size={18}/></button></article>)}{resources.filter(r=>(r.title+' '+r.category).toLowerCase().includes(query.toLowerCase())).length===0&&<p className="empty-results">No resources match your search.</p>}</div></div></section>
- <section className="section-wrap about-section" id="about"><div className="about-mark"><GraduationCap size={36}/></div><div><span className="eyebrow">ABOUT LMDRP</span><h2>Make learning count.</h2><p>We make digital skills and learning resources easier to access. Whether you are exploring something new or developing your existing skills, there is room to grow here.</p></div><button className="btn btn-outline" onClick={()=>openAuth('signup')}>Start learning <ArrowRight size={16}/></button></section></main>
- <footer className="footer"><div className="section-wrap footer-inner"><a className="brand footer-brand" href="#home"><span className="brand-mark"><GraduationCap size={20}/></span><span>LMDRP<small>LEARN • CREATE • GROW</small></span></a><span>© 2026 LMDRP. Learn something meaningful.</span><a href="#about">Contact & support</a></div></footer>
- {notice&&<div className="toast" role="status">{notice}<button onClick={()=>setNotice('')}><X size={15}/></button></div>}{auth&&<AuthModal mode={auth} setMode={setAuth} onClose={()=>setAuth(null)}/>}
- </div>}
+
+import Courses from './pages/Courses.jsx';
+import ThreeD from './pages/ThreeD.jsx';
+import Graphics from './pages/Graphics.jsx';
+import Spreadsheet from './pages/Spreadsheet.jsx';
+import WebDevelopment from './pages/WebDevelopment.jsx';
+import Library from './pages/Library.jsx';
+import MyLearning from './pages/MyLearning.jsx';
+import Profile from './pages/Profile.jsx';
+
+function HomePage({ openAuth }) {
+  return (
+    <>
+      <main id="home">
+        <section className="hero section-wrap">
+          <div className="hero-copy">
+            <span className="eyebrow">
+              <span className="eyebrow-dot" />
+              PRACTICAL SKILLS. REAL OPPORTUNITIES.
+            </span>
+
+            <h1>
+              Learn skills that<br />
+              <em>move you forward.</em>
+            </h1>
+
+            <p className="hero-lead">
+              Build practical, industry-relevant skills with guided
+              courses, helpful resources and a community that wants
+              to see you grow.
+            </p>
+
+            <div className="hero-actions">
+              <button
+                className="btn btn-primary"
+                onClick={() => openAuth('signup')}
+              >
+                Register now
+              </button>
+
+              <a className="btn btn-light" href="/courses">
+                Explore courses
+              </a>
+            </div>
+
+            <div className="hero-proof">
+              <div className="proof-avatars">
+                <span>M</span>
+                <span>T</span>
+                <span>A</span>
+                <b>+</b>
+              </div>
+
+              <span>
+                <strong>Learn at your pace</strong>
+                <small>Start building skills today</small>
+              </span>
+            </div>
+          </div>
+
+          <div className="hero-art">
+            <div className="art-orbit orbit-one" />
+            <div className="art-orbit orbit-two" />
+
+            <div className="art-card art-card-main">
+              <div className="art-top">
+                <span className="live-dot" />
+                LEARNING PATH
+              </div>
+
+              <div className="art-symbol">◈</div>
+
+              <h3>
+                Turn curiosity<br />
+                into capability.
+              </h3>
+
+              <p>
+                Small steps. Practical projects. New possibilities.
+              </p>
+
+              <div className="art-progress">
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
+
+              <small>YOUR JOURNEY STARTS HERE</small>
+            </div>
+
+            <div className="floating-card float-top">
+              <span className="float-icon green-icon">
+                <CheckCircle2 size={19} />
+              </span>
+              <span>
+                <b>Keep growing</b>
+                <small>One skill at a time</small>
+              </span>
+            </div>
+
+            <div className="floating-card float-bottom">
+              <span className="float-icon red-icon">
+                <PlayCircle size={20} />
+              </span>
+              <span>
+                <b>Learn by doing</b>
+                <small>Practical lessons</small>
+              </span>
+            </div>
+
+            <div className="art-stamp">
+              <GraduationCap size={24} />
+            </div>
+          </div>
+        </section>
+
+        <section className="trust-strip">
+          <div>
+            <span className="strip-icon"><Target /></span>
+            <span>
+              <b>Practical learning</b>
+              <small>Skills you can apply</small>
+            </span>
+          </div>
+
+          <div>
+            <span className="strip-icon"><BookOpen /></span>
+            <span>
+              <b>Useful resources</b>
+              <small>Learn beyond the lesson</small>
+            </span>
+          </div>
+
+          <div>
+            <span className="strip-icon"><Users /></span>
+            <span>
+              <b>Guided community</b>
+              <small>Grow with support</small>
+            </span>
+          </div>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <div className="section-wrap footer-inner">
+          <a className="brand footer-brand" href="/">
+            <span className="brand-mark">
+              <GraduationCap size={20} />
+            </span>
+
+            <span>
+              LMDRP
+              <small>LEARN • CREATE • GROW</small>
+            </span>
+          </a>
+
+          <span>© 2026 LMDRP. Learn something meaningful.</span>
+
+          <a href="/support">Contact & support</a>
+        </div>
+      </footer>
+    </>
+  );
+}
+
+function SimplePage({ title }) {
+  return (
+    <main className="section-wrap" style={{ minHeight: '75vh', paddingTop: 40 }}>
+      <h1>{title}</h1>
+    </main>
+  );
+}
+
+function AppLayout() {
+  const navigate = useNavigate();
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [auth, setAuth] = useState(null);
+  const [notice, setNotice] = useState('');
+
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem('lmdrp_user')) || null;
+    } catch {
+      return null;
+    }
+  });
+
+  const openAuth = (mode) => setAuth(mode);
+
+  const handleLoginSuccess = (loggedInUser) => {
+    setUser(loggedInUser);
+    setAuth(null);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('lmdrp_access_token');
+    sessionStorage.removeItem('lmdrp_user');
+
+    setUser(null);
+    setMenuOpen(false);
+    setNotice('You have logged out successfully.');
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setMenuOpen(false);
+  };
+
+  return (
+    <div className="app-shell">
+      <Header
+        onMenu={() => setMenuOpen(true)}
+        onAuth={openAuth}
+        onProfile={() => navigate('/profile')}
+        user={user}
+        onLogout={handleLogout}
+      />
+
+      <SideMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        onAuth={openAuth}
+        onNavigate={handleNavigation}
+        user={user}
+        onLogout={handleLogout}
+      />
+
+      <Routes>
+        <Route
+          path="/"
+          element={<HomePage openAuth={openAuth} />}
+        />
+
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/3d" element={<ThreeD />} />
+        <Route path="/graphics" element={<Graphics />} />
+        <Route path="/spreadsheet" element={<Spreadsheet />} />
+        <Route path="/web-development" element={<WebDevelopment />} />
+        <Route path="/library" element={<Library />} />
+        <Route path="/my-learning" element={<MyLearning />} />
+        <Route path="/profile" element={<Profile />} />
+
+        <Route path="/registration" element={<SimplePage title="Registration" />} />
+        <Route path="/classroom" element={<SimplePage title="Classroom" />} />
+        <Route path="/assignments" element={<SimplePage title="Assignments" />} />
+        <Route path="/calendar" element={<SimplePage title="Calendar" />} />
+        <Route path="/explore" element={<SimplePage title="Explore" />} />
+        <Route path="/support" element={<SimplePage title="Support us" />} />
+        <Route path="/feedback" element={<SimplePage title="Feedback & contact" />} />
+
+        <Route path="*" element={<SimplePage title="Page not found" />} />
+      </Routes>
+
+      {notice && (
+        <div className="toast" role="status">
+          {notice}
+          <button onClick={() => setNotice('')}>
+            ×
+          </button>
+        </div>
+      )}
+
+      {auth && (
+        <AuthModal
+          mode={auth}
+          setMode={setAuth}
+          onClose={() => setAuth(null)}
+          onSuccess={handleLoginSuccess}
+        />
+      )}
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppLayout />
+    </BrowserRouter>
+  );
+}
