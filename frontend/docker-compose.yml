@@ -1,0 +1,36 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - VITE_USE_MOCK=${VITE_USE_MOCK:-true}
+      - VITE_PROXY_TARGET=${VITE_PROXY_TARGET:-http://api:4000}
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-learn}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-learn_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-learning_platform}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Add your backend here later, for example:
+  # api:
+  #   build: ../backend
+  #   ports: ["4000:4000"]
+  #   environment:
+  #     DATABASE_URL: postgres://learn:learn_pass@db:5432/learning_platform
+  #   depends_on: [db]
+
+volumes:
+  pgdata:

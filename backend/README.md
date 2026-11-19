@@ -48,10 +48,15 @@ npm install
 Set `DATABASE_URL` in `.env` to your local database, then:
 
 ```bash
+docker compose up -d db
 npx prisma generate
 npx prisma migrate dev --name init
 npm run start:dev
 ```
+
+The Compose database is published on `localhost:5432` for this workflow. Set the
+hostname in `DATABASE_URL` to `localhost` when running NestJS outside Docker;
+keep it as `db` when running the API through Docker Compose.
 
 ## 4. Initial API routes
 

@@ -1,2 +1,0 @@
-# iLearning
-the learning platform

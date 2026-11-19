@@ -1,45 +1,45 @@
-# LMDRP Frontend
+# Learning Platform: Frontend (React + Vite)
 
-Responsive React + Vite frontend starter for the Learning Management and Digital Resource Platform (LMDRP).
+Responsive web app (mobile and desktop) for the learning platform: account holder, student, teacher and admin areas, 29 screens.
+The landing page, menu drawer and sign up/login follow your Figma design.
 
-## Included in this first frontend milestone
+## Run in GitHub Codespaces (Docker)
 
-- Responsive landing page with hero section and course highlights
-- Course cards for 3D/Blender, graphic design, Excel, and web development
-- Learning library preview with working client-side search
-- Slide-out navigation menu based on the supplied wireframe
-- Sign-up and login modal with form validation and password visibility toggle
-- Responsive desktop and mobile layouts
+1. Copy this folder into your repo (for example `frontend/`).
+2. In a terminal: `cd frontend && cp .env.example .env && docker compose up --build`
+3. Open the forwarded port **5173** (Codespaces shows a popup, or use the Ports tab).
+4. Postgres starts on port 5432 (user/password/db come from `.env`). The UI does not use it yet.
 
-## Run locally
+Without Docker: `npm install && npm run dev`.
 
-Requirements: Node.js 18+ and npm.
+## Testing the interactions (demo mode)
 
-```bash
-npm install
-npm run dev
+There is no backend yet, so data lives in the browser (`localStorage`). On **sign up / login** use the
+**Demo** chips: Account holder, Student, Teacher, Admin.
+
+- Hamburger opens the side menu (on desktop the menu is a fixed sidebar). Bell opens notifications. The avatar opens your profile.
+- Account holder: library items marked LOCKED open the "register now" prompt. Register (pick courses) and the admin must verify you.
+- Admin: Students or Dashboard, press **verify**. Then switch back to the account holder and you get My Classes.
+- Teacher: add a meeting, video, assignment or task. The class is notified, and the student sees it in notifications.
+- Teacher library upload goes to the admin Library approval queue.
+- To reset demo data: clear the site data for the page, or run `localStorage.clear()` in the browser console.
+
+## Structure
+
 ```
-
-Open the local URL printed by Vite (usually http://localhost:5173).
-
-To create a production build:
-
-```bash
-npm run build
-npm run preview
-```
-
-## Project structure
-
-```text
 src/
-  components/   Header, SideMenu, AuthModal
-  data/         Sample course and library data
-  App.jsx       Landing page and page composition
-  main.jsx      React entry point
-  styles.css    Responsive styling and design tokens
+  main.jsx, App.jsx        entry and route table
+  router.js                tiny hash router (no extra dependency)
+  store.jsx                app state, localStorage persistence, toasts
+  data/mock.js             seed data (replace with API data)
+  api/client.js            fetch helper for your Postgres API (VITE_API_URL, proxied at /api)
+  components/              Layout (top bar, drawer, sidebar) and ui kit
+  pages/                   Landing, Auth, student, library, misc, teacher, admin
+  styles.css               all styles (colours at the top as CSS variables)
 ```
 
-## Current implementation notes
+## Connecting the backend later
 
-This is the frontend milestone only. Authentication forms currently demonstrate the UI and client-side validation; they do not create accounts or authenticate users. Course registration, library access control, notifications, profile data, payments, and classroom content will need API integration in later milestones. The project is structured to connect to the planned NestJS backend and PostgreSQL database.
+Each action in the pages calls `up(draft => ...)` from `store.jsx`. Replace those with `api('/endpoint', {...})`
+calls from `src/api/client.js`, and set `VITE_USE_MOCK=false`. Add your API as a service in `docker-compose.yml`
+(a commented example is included) so `http://api:4000` works through the `/api` proxy.
